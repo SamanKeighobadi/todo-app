@@ -9,19 +9,25 @@
     <input type="submit" value="Add Todo" />
   </form>
 
-  {{ input_content }}
+  {{ todos }}
 </template>
 
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
+import { createToast } from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css'
 
-const todos = ref([]);
+const todos = ref([{title:"saman",computed:false,createdAt: new Date().getTime(),}]);
 const name = ref("");
+const input_content = ref("");
+
 
 const addTodo = () => {
   if (input_content.value.trim() === "") {
     return;
   }
+
+
 
   todos.value.push({
     title: input_content.value,
@@ -29,10 +35,13 @@ const addTodo = () => {
     createdAt: new Date().getTime(),
   });
 
+
+
   watch(
     todos,
     (newTodo) => {
       localStorage.setItem("todos", JSON.stringify(newTodo));
+      console.log(newTodo);
     },
     {
       deep: true,
@@ -40,13 +49,17 @@ const addTodo = () => {
   );
 };
 
-const input_content = ref("");
+
 watch(name, (newVal) => {
   localStorage.setItem("name", newVal);
 });
 
 onMounted(() => {
   name.value = localStorage.getItem("name") || " ";
+  if(localStorage.getItem('todos')){
+
+    todos.value = JSON.stringify(localStorage.getItem('todos')) || [];
+  }
 });
 </script>
 
